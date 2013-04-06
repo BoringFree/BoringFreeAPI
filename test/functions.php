@@ -29,3 +29,7 @@ function execute($payload, $debug = false) {
 	return $result;
 
 }
+
+function debug($p) {
+	echo "\n".$p;
+}

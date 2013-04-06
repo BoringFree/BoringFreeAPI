@@ -7,11 +7,17 @@ class BoredEvent extends BoredBase {
 
 			$interests = (isset($search->interests) && !empty($search->interests)) ? implode("','",$search->interests) : false;
 			$radius = (isset($search->radius) && !empty($search->radius)) ? $search->radius : false;
-//			$start = (isset($search->start) && !empty($search->radius)) ? $search->radius : false;
-//			$end = (isset($search->end) && !empty($search->radius)) ? $search->radius : false;
+			$start = (isset($search->start) && !empty($search->start)) ? date("Y-m-d H:i:00",strtotime($search->start)) : false;
+			$end = (isset($search->end) && !empty($search->end)) ? date("Y-m-d H:i:59",strtotime($search->end)) : false;
+			$city = (isset($search->city) && !empty($search->city)) ? $search->city : false;
 
 			$q = "
 				SELECT
+			";
+			if (isset($search->count)) {
+				$q .= "count(e.id) as eventsCount";
+			} else {
+				$q .= "
 					e.id as eid,
 					e.type,
 					e.radius,
@@ -25,6 +31,9 @@ class BoredEvent extends BoredBase {
 					p.name as pname,
 					p.phone as pphone,
 					p.email as pemail
+				";
+			}
+			$q .= "
 				FROM
 					events e
 				LEFT JOIN
@@ -36,9 +45,16 @@ class BoredEvent extends BoredBase {
 			";
 			$q .= ($radius !== false) ? " AND e.radius >= ".intval($radius) : "";
 			$q .= ($interests !== false) ? " AND e.type IN ('".$interests."')" : "";
+			$q .= ($start !== false) ? " AND e.start >= '".$start."'" : "";
+			$q .= ($end !== false) ? " AND e.end <= '".$end."'" : "";
+			$q .= ($city !== false) ? " AND e.city = '".$city."'" : "";
+//			$q .= ($location !== false) ? " AND e.location = '".$location."'" : "";
 
-			return $r = DB::read($q);
-
+			$r = DB::read($q);
+			if (isset($search->count)) {
+				return $r[0];
+			}
+			return $r;
 		}
 		return $this->error('BORED_PERSON_NEEDED');
 	}

@@ -13,16 +13,23 @@ class BoredApi {
 		'dashboard',
 		'iambored',
 		'events' => array('BoredEvent','search'),
+		'persons' => array('BoredPerson','search'),
 		'eventsRegister' => array('BoredEvent','register'),
 		'getnotifications'
 	);
 
 	public function init() {
-		$p = $_GET;
-		$_SESSION['callback'] = isset($p['callback']) ? $p['callback'] : '';
-		unset($p["_"]);
-		unset($p["callback"]);
-		$this->payload = json_decode(json_encode($p), FALSE);
+		$p = file_get_contents('php://input');
+		if (empty($p)) {
+			error_log(print_r($_REQUEST,1));
+			$p = $_REQUEST;
+			$_SESSION['callback'] = isset($p['callback']) ? $p['callback'] : '';
+			unset($p["_"]);
+			unset($p["callback"]);
+			$this->payload = json_decode(json_encode($p), FALSE);
+		} else {
+			$this->payload = json_decode($p);
+		}
 		$this->read();
 		$this->process();
 	}
@@ -41,7 +48,10 @@ class BoredApi {
 	}
 
 	public function write($data) {
-		$r = $_SESSION['callback'] . "(".json_encode($data).")";
+		$r = json_encode($data);
+		if (!empty($_SESSION['callback'])) {
+			$r = $_SESSION['callback'] . "(".$r.")";
+		}
 		die($r);
 	}
 

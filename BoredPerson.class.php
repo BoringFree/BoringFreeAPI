@@ -2,6 +2,45 @@
 
 class BoredPerson extends BoredBase {
 
+	public function search($search) {
+		if (!empty($search->pid)) {
+
+			$interests = (isset($search->interests) && !empty($search->interests)) ? $search->interests : false;
+
+			$q = "
+				SELECT
+			";
+			if (isset($search->count)) {
+				$q .= "count(id) as personsCount";
+			} else {
+				$q .= "
+					*
+				";
+			}
+			$q .= "
+				FROM
+					persons
+			";
+			if ($interests) {
+				$q .= "
+					WHERE
+						1=0
+				";
+				foreach ($interests as $v) {
+					$q.= " OR FIND_IN_SET('".DB::escape($v)."',interests) > 0 ";
+				}
+			}
+
+			$r = DB::read($q);
+			if (isset($search->count)) {
+				return $r[0];
+			}
+			return $r;
+
+		}
+		return $this->error('BORED_PERSON_NEEDED');
+	}
+
 	public function get($person) {
 		if (!empty($person->pid)) {
 
