@@ -2,11 +2,13 @@
 
 class BoredEvent extends BoredBase {
 
-	public function random($search) {
+	public function search($search) {
 		if (!empty($search->pid)) {
 
 			$interests = (isset($search->interests) && !empty($search->interests)) ? implode("','",$search->interests) : false;
 			$radius = (isset($search->radius) && !empty($search->radius)) ? $search->radius : false;
+//			$start = (isset($search->start) && !empty($search->radius)) ? $search->radius : false;
+//			$end = (isset($search->end) && !empty($search->radius)) ? $search->radius : false;
 
 			$q = "
 				SELECT
