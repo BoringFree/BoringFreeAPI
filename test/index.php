@@ -21,6 +21,22 @@ $r = json_decode(execute($payload));
 debug("----RESPONSE----");
 debug(print_r($r,1));
 
+$person = $r;
+
+$payload = new stdClass();
+$payload->appkey = 'test';
+$payload->cmd = 'iambored';
+$payload->params->pid = $person->pid;
+$payload->params->interests = array('sport','movie','art');
+
+debug("----REQUEST-----");
+debug(print_r($payload,1));
+
+$r = json_decode(execute($payload));
+
+debug("----RESPONSE----");
+debug(print_r($r,1));
+
 debug("EVENTS");
 
 $person = $r;
@@ -70,7 +86,7 @@ $payload->cmd = 'persons';
 
 $payload->params->count = 1;
 $payload->params->pid = $person->pid;
-$payload->params->interests = $person->interests;
+$payload->params->interests = array('art');
 
 debug("----REQUEST-----");
 debug(print_r($payload,1));
@@ -86,7 +102,7 @@ $payload->appkey = 'test';
 $payload->cmd = 'persons';
 
 $payload->params->pid = $person->pid;
-$payload->params->interests = $person->interests;
+$payload->params->interests = array('art');
 
 debug("----REQUEST-----");
 debug(print_r($payload,1));

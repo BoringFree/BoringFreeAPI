@@ -14,7 +14,12 @@ class BoredPerson extends BoredBase {
 				$q .= "count(id) as personsCount";
 			} else {
 				$q .= "
-					*
+					id as pid,
+					name,
+					phone,
+					photo,
+					email,
+					interests
 				";
 			}
 			$q .= "
@@ -31,12 +36,36 @@ class BoredPerson extends BoredBase {
 				}
 			}
 
+			error_log($q);
+
 			$r = DB::read($q);
 			if (isset($search->count)) {
 				return $r[0];
 			}
+			foreach ($r as $k=>$v) {
+				$r[$k]->interests = explode(',', $v->interests);
+			}
+			error_log(print_r($r,1));
 			return $r;
 
+		}
+		return $this->error('BORED_PERSON_NEEDED');
+	}
+
+	public function iambored($person) {
+		if (!empty($person->pid)) {
+			$p = array();
+			if (isset($person->interests)) {
+				foreach ($person->interests as $v) {
+					if (isset(BoredBase::$interests[$v])) {
+						$p[] = $v;
+					}
+				}
+			}
+			$person->interests = $p;
+			$q = "UPDATE persons SET interests = '".DB::escape(implode(',',$person->interests))."' WHERE id = ".intval($person->pid);
+			DB::write($q);
+			return $this->get($person);
 		}
 		return $this->error('BORED_PERSON_NEEDED');
 	}
@@ -44,10 +73,23 @@ class BoredPerson extends BoredBase {
 	public function get($person) {
 		if (!empty($person->pid)) {
 
-			$q = "SELECT * FROM persons WHERE id = ".intval($person->pid);
+			$q = "
+				SELECT
+					id as pid,
+					name,
+					phone,
+					photo,
+					email,
+					interests
+				FROM
+					persons
+				WHERE
+					id = ".intval($person->pid);
 			$r = DB::read($q);
 			if (!empty($r)) {
-				return $r[0];
+				$r = $r[0];
+				$r->interests = explode(',', $r->interests);
+				return $r;
 			}
 		}
 		return $this->error('BORED_PERSON_NOT_EXIST');

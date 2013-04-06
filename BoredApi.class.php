@@ -11,7 +11,7 @@ class BoredApi {
 		'login' => array('BoredPerson','login'),
 		'register' => array('BoredPerson','register'),
 		'dashboard',
-		'iambored',
+		'iambored' => array('BoredPerson','iambored'),
 		'events' => array('BoredEvent','search'),
 		'persons' => array('BoredPerson','search'),
 		'eventsRegister' => array('BoredEvent','register'),
