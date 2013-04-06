@@ -80,13 +80,17 @@ class BoredFile {
 		}
 		$all = scandir(BORED_ROOT . '/' . $this->type . '/');
 		$r = array();
-		foreach ($all as $v) {
-			$id = substr($v,0,-5);
-			$origin = json_decode(@file_get_contents(BORED_ROOT . '/' . $this->type . '/'.$v));
-			foreach ($eval as $k=>$v) {
+		foreach ($all as $file) {
+			$id = substr($file,0,-5);
+			$origin = json_decode(@file_get_contents(BORED_ROOT . '/' . $this->type . '/'.$file));
+			$error = false;
+			foreach ($eval as $k => $v) {
 				if (!isset($origin->$k) || $origin->$k != $v) {
+					$error = true;
 					continue;
 				}
+			}
+			if (!$error) {
 				if ($read) {
 					$this->id = $id;
 					return $this->read();
