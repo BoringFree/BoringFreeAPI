@@ -10,6 +10,8 @@ session_start();
 include_once (__DIR__ . '/config.php');
 include_once (__DIR__ . '/Bored.class.php');
 
+DB::connect();
+
 $api = new BoredApi();
 $api->init();
 

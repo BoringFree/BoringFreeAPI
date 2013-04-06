@@ -4,11 +4,11 @@ class BoredPerson extends BoredBase {
 
 	public function get($person) {
 		if (!empty($person->pid)) {
-			$bf = new BoredFile();
-			$bf->id = $person->pid;
-			$bf->isPerson();
-			if (false !== ($person = $bf->read())) {
-				return $person;
+
+			$q = "SELECT * FROM persons WHERE id = ".intval($person->pid);
+			$r = DB::read($q);
+			if (!empty($r)) {
+				return $r[0];
 			}
 		}
 		return $this->error('BORED_PERSON_NOT_EXIST');
@@ -23,9 +23,6 @@ class BoredPerson extends BoredBase {
 				return $this->error('BORED_PERSON_NO_PASS_PROVIDED');
 			}
 
-			// store pass as md5;
-			$person->pass = md5($person->pass);
-
 			if (!isset($person->interests)) {
 				$person->interests = array();
 			}
@@ -35,17 +32,34 @@ class BoredPerson extends BoredBase {
 			if (!isset($person->email)) {
 				$person->email = '';
 			}
+
 			if (!$this->isPersonRegistered($person->name)) {
-				$person->pid = Bored::getUnique();
-				$bf = new BoredFile();
-				$bf->id = $person->pid;
-				$bf->isPerson();
-				$bf->write($person);
+
+				$q = "
+					INSERT INTO persons (
+						name,
+						pass,
+						interests,
+						phone,
+						email
+					) VALUES (
+						'".DB::escape($person->name)."',
+						MD5('".DB::escape($person->pass)."'),
+						'".DB::escape(implode(',',$person->interests))."',
+						'".DB::escape($person->phone)."',
+						'".DB::escape($person->email)."'
+					)
+				";
+
+				if (false !== DB::write($q)) {
+					$person->pid = DB::lastid();
+				}
 
 				// ugly hack
 				unset($person->pass);
 
 				return $person;
+
 			}
 		}
 		return $this->error('BORED_PERSON_EXISTS');
@@ -53,15 +67,15 @@ class BoredPerson extends BoredBase {
 
 
 	public function isPersonRegistered($name) {
-		$bf = new BoredFile();
-		$bf->isPerson();
-		$eval = new stdClass();
-		$eval->name = $name;
-		$a = $bf->evalAll($eval, false);
-		if (false !== $a) {
+		$q = "
+			SELECT count(id) as cnt FROM persons WHERE name = '".DB::escape($name)."'
+		";
+		$r = DB::read($q);
+		if ($r[0]->cnt > 0) {
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	public function login($person) {
@@ -74,17 +88,29 @@ class BoredPerson extends BoredBase {
 			return $this->error('BORED_PERSON_NO_PASS_PROVIDED');
 		}
 
-		// stored pass as md5;
-		$person->pass = md5($person->pass);
+		$q = "
+			SELECT
+				id as pid,
+				name,
+				pass,
+				interests,
+				phone,
+				email
+			FROM
+				persons
+			WHERE
+				name = '".DB::escape($person->name)."'
+			AND
+				pass = MD5('".$person->pass."')
+		";
 
-		$bf = new BoredFile();
-		$bf->isPerson();
+		$r = DB::read($q);
 
-		if (false !== ($person = $bf->evalAll($person))) {
-
+		if (!empty($r)) {
+			$person = $r[0];
+			$person->interests = explode(',',$person->interests);
 			// ugly hack
 			unset($person->pass);
-
 			return $person;
 
 		}

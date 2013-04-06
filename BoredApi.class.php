@@ -12,7 +12,8 @@ class BoredApi {
 		'register' => array('BoredPerson','register'),
 		'dashboard',
 		'iambored',
-		'events',
+		'events' => array('BoredEvent','random'),
+		'eventsRegister' => array('BoredEvent','register'),
 		'getnotifications'
 	);
 
@@ -49,6 +50,9 @@ class BoredApi {
 		$c = $this->commands[$this->payload->cmd][0];
 		$m = $this->commands[$this->payload->cmd][1];
 		$o = new $c;
+		if (!isset($this->payload->params)) {
+			$this->payload->params = null;
+		}
 		$result = $o->$m($this->payload->params);
 		$this->write($result);
 	}
