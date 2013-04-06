@@ -18,15 +18,8 @@ class BoredApi {
 	);
 
 	public function init() {
-//		$p = file_get_contents('php://input');
-//		error_log($p);
-		error_log(print_r($_GET,1));
-//		error_log(print_r($_REQUEST,1));
-//		echo "test";
-//		die();
-//		$p = file_get_contents('php://input');
 		$p = $_GET;
-		$_SESSION['callback'] = $p['callback'];
+		$_SESSION['callback'] = isset($p['callback']) ? $p['callback'] : '';
 		unset($p["_"]);
 		unset($p["callback"]);
 		$this->payload = json_decode(json_encode($p), FALSE);
