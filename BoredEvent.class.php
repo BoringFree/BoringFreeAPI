@@ -59,34 +59,37 @@ class BoredEvent extends BoredBase {
 		return $this->error('BORED_PERSON_NEEDED');
 	}
 
-	public function get($eid) {
-		$q = "
-			SELECT
-				e.id as eid,
-				e.type,
-				e.radius,
-				e.start,
-				e.end,
-				e.title,
-				e.desctiption,
-				e.location,
-				e.pid,
-				e.city,
-				p.name as pname,
-				p.phone as pphone,
-				p.email as pemail
-			FROM
-				events e
-			LEFT JOIN
-				persons p
-			ON
-				e.pid = p.id
-			WHERE
-				e.id = '".intvla($eid)."'
-		";
-		$r = DB::read($q);
-		if (!empty($r)) {
-			return $r[0];
+	public function get($event) {
+		if (!empty($event->eid)) {
+			$q = "
+				SELECT
+					e.id as eid,
+					e.type,
+					e.radius,
+					e.start,
+					e.end,
+					e.title,
+					e.description,
+					e.location,
+					e.pid,
+					e.city,
+					p.name as pname,
+					p.phone as pphone,
+					p.email as pemail
+				FROM
+					events e
+				LEFT JOIN
+					persons p
+				ON
+					e.pid = p.id
+				WHERE
+					e.id = '".intval($event->eid)."'
+			";
+
+			$r = DB::read($q);
+			if (!empty($r)) {
+				return $r[0];
+			}
 		}
 		return $this->error('BORED_EVENT_MISSING');
 	}

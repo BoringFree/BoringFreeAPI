@@ -27,7 +27,7 @@ $payload = new stdClass();
 $payload->appkey = 'test';
 $payload->cmd = 'iambored';
 $payload->params->pid = $person->pid;
-$payload->params->interests = array('sport','movie','art');
+$payload->params->interests = array('coffee','run','art');
 
 debug("----REQUEST-----");
 debug(print_r($payload,1));
@@ -82,6 +82,21 @@ debug(print_r($r,1));
 
 $payload = new stdClass();
 $payload->appkey = 'test';
+$payload->cmd = 'eventg';
+
+$payload->params->eid = 2;
+
+debug("----REQUEST-----");
+debug(print_r($payload,1));
+
+$r = json_decode(execute($payload));
+
+debug("----RESPONSE----");
+debug(print_r($r,1));
+
+
+$payload = new stdClass();
+$payload->appkey = 'test';
 $payload->cmd = 'persons';
 
 $payload->params->count = 1;
@@ -111,3 +126,18 @@ $r = json_decode(execute($payload));
 
 debug("----RESPONSE----");
 debug(print_r($r,1));
+
+$payload = new stdClass();
+$payload->appkey = 'test';
+$payload->cmd = 'persong';
+
+$payload->params->pid = 6;
+
+debug("----REQUEST-----");
+debug(print_r($payload,1));
+
+$r = json_decode(execute($payload));
+
+debug("----RESPONSE----");
+debug(print_r($r,1));
+

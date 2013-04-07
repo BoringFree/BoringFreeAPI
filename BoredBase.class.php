@@ -8,7 +8,12 @@ class BoredBase {
 		'movie' => 'Кино',
 		'music' => 'Музика',
 		'art' => 'Изкуство',
-		'general' => 'Друго'
+		'general' => 'Друго',
+		'run' => 'Бягане',
+		'basketball' => 'Баскетбол',
+		'beer' => 'Бира',
+		'coffee' => 'Кафе',
+		'tennis' => 'Тенис'
 	);
 
 	public static $max_radius = 20;

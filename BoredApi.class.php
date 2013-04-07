@@ -14,6 +14,8 @@ class BoredApi {
 		'iambored' => array('BoredPerson','iambored'),
 		'events' => array('BoredEvent','search'),
 		'persons' => array('BoredPerson','search'),
+		'eventg' => array('BoredEvent','get'),
+		'persong' => array('BoredPerson','get'),
 		'eventsRegister' => array('BoredEvent','register'),
 		'getnotifications'
 	);
@@ -21,7 +23,7 @@ class BoredApi {
 	public function init() {
 		$p = file_get_contents('php://input');
 		if (empty($p)) {
-			error_log(print_r($_REQUEST,1));
+//			error_log(print_r($_REQUEST,1));
 			$p = $_REQUEST;
 			$_SESSION['callback'] = isset($p['callback']) ? $p['callback'] : '';
 			unset($p["_"]);
